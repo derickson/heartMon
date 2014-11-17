@@ -4,3 +4,8 @@ heartMon is a python tornado REST service for checking the status and performanc
 
 This is meant as sample code to help build a JQuery compatible widget for a demo UI or to be used as a standalone near-real time monitor to leave up while running some other UI during a demo.
 
+Instructions
+----
+* python app.py
+* browse to http://localhost:8888
+
