@@ -1,0 +1,49 @@
+div#heartMon {
+	border: 1px solid black;
+}
+
+div#heartMon table div {
+	color: white;
+	width: 200px;
+}
+div#heartMon .PRIMARY {
+	background: green;
+}
+div#heartMon .SECONDARY {
+	background: blue;
+}
+div#heartMon .NOTREACH {
+	background: red;
+}
+
+div#heartMon .STARTUP {
+	background: yellow;
+}
+
+div#heartMon .STARTUP2 {
+	background: yellow;
+}
+
+div#heartMon .UNKNOWN {
+	background: yellow;
+}
+
+div#heartMon .ARBITER {
+	background: purple;
+}
+
+div#heartMon .DOWN {
+	background: red;
+}
+
+div#heartMon .ROLLBACK {
+	background: yellow;
+}
+
+div#heartMon .REMOVED {
+	background: red;
+}
+
+div#heartMon .RECOVERING {
+	background: yellow;
+}
