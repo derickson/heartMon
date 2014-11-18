@@ -207,7 +207,7 @@ heartMon = {
 
         var graphOptions = {
             chart: {
-                type: 'spline',
+                type: 'column',
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10
                 
@@ -220,14 +220,22 @@ heartMon = {
                 tickPixelInterval: 150
             },
             yAxis: {
-                title: {
+                min: 0,
+				title: {
                     text: 'Op Count'
                 },
                 plotLines: [{
                     value: 0,
                     width: 1,
                     color: '#808080'
-                }]
+                }],
+				stackLabels: {
+				 enabled: true,
+				 style: {
+				   fontWeight: 'bold',
+				   color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+				 }
+			    }
             },
             tooltip: {
                 formatter: function () {
@@ -237,8 +245,25 @@ heartMon = {
                 }
             },
             legend: {
-                enabled: false
+                enabled: true
             },
+			plotOptions: {
+			            column: {
+							borderWidth: 0,
+							groupPadding: 0,
+							animation: false,
+							lineWidth: 0,
+							shadow: false,
+			                stacking: 'normal',
+			                dataLabels: {
+			                    enabled: false,
+			                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+			                    style: {
+			                        textShadow: '0 0 3px black, 0 0 3px black'
+			                    }
+			                }
+			            }
+			        },
             exporting: {
                 enabled: false
             },
