@@ -107,7 +107,7 @@ var HeartMon = {
 
 
 
-app.get('/', function (req, res) {
+app.get('/heartMon', function (req, res) {
 	HeartMon.getStatus( function(status) {
 		res.json(status);
 	});
