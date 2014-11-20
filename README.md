@@ -10,8 +10,16 @@ Configuration
 * The hostname and port of the "mongos" process is needs to be hard coded into the top of app.py
 
 
-Instructions
+Instructions (Python)
 ----
-* python app.py
+* install pymongo (the mongodb driver for python)
+* > python app.py
 * browse to http://localhost:8888
 
+
+Instructions (Node.JS)
+----
+* install npm nodejs
+* > cd node
+* > npm install -d
+* > node server.js
