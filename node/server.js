@@ -8,7 +8,7 @@ var async = require('async');
 
 
 // ######### Prep Database
-dbConn : "mongodb://localhost:61017/config",
+var dbConn = "mongodb://localhost:61017/config";
 var MongoClient = require('mongodb').MongoClient;
 
 var db = null;
@@ -21,7 +21,7 @@ var HeartMon = {
 	
 	
 	init: function ( callback ){
-		MongoClient.connect(HeartMon.dbConn, function(err, dbgiven) {
+		MongoClient.connect(dbConn, function(err, dbgiven) {
 		  if(!err) {
 		    console.log("MongoDB mongos connection obtained");
 		        db = dbgiven;
@@ -112,6 +112,8 @@ app.get('/heartMon', function (req, res) {
 		res.json(status);
 	});
 });
+
+app.use(express.static(__dirname + '/../static'));
 
 
 HeartMon.init( function () {
