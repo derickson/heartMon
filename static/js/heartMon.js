@@ -6,6 +6,20 @@ function classFromRepStatus(status) {
 	}
 }
 
+// utility sort function
+var sort_by = function(field, reverse, primer){
+
+   var key = primer ? 
+       function(x) {return primer(x[field])} : 
+       function(x) {return x[field]};
+
+   reverse = [-1, 1][+!!reverse];
+
+   return function (a, b) {
+       return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+     } 
+}
+
 function updateCounterObjWData( statsCounter, data ){
 	
 	var width = data.wide;
@@ -63,9 +77,13 @@ heartMon = {
 			cache: false,
 			dataType: "json",
 			type: 'GET',
+			timeout: 5000,
 			success: function(data) {
 				
-				var tableStr = "<span>MongoDB Health Monitor</span><table id='heartMonTable'>";
+				data.shards.sort(sort_by('name', true));
+				
+				
+				var tableStr = "<table id='heartMonTable'>";
 
 				var width = data.wide;
 				var depth = data.deep;
@@ -90,10 +108,12 @@ heartMon = {
 					
 					
 					for(var w = 0; w < width; ++w){
+						shard.machines.sort(sort_by('id', true));
+						
 						var shard = data.shards[w];
 						var machine = shard.machines[d];
 						if(machine){
-							tableStr += "<td><div class='"+classFromRepStatus(machine.state)+"'>"+machine["state"]+"</div> </td>"
+							tableStr += '<td><div class="'+ classFromRepStatus(machine.state)+'">'+ machine['name'].split('.')[0] + ': ' +machine['state']+'</div> </td>'
 						}
 					}
 					
@@ -127,7 +147,11 @@ heartMon = {
 			cache: false,
 			dataType: "json",
 			type: 'GET',
+			timeout: 1000,
 			success: function(data) {
+
+				data.shards.sort(sort_by('name', true));
+
 
 				var tableStr = "";
 
@@ -149,9 +173,13 @@ heartMon = {
 					
 					for(var w = 0; w < width; ++w){
 						var shard = data.shards[w];
+						
+						shard.machines.sort(sort_by('id', true));
+						
 						var machine = shard.machines[d];
 						if(machine){
-							tableStr += "<td><div class='"+classFromRepStatus(machine.state)+"'>"+machine["state"]+"</div> </td>"
+							//console.log(machine);
+							tableStr += '<td><div class="'+ classFromRepStatus(machine.state)+'">'+ machine['name'].split('.')[0] + ': ' +machine['state']+'</div> </td>'
 						}
 					}
 					
@@ -178,7 +206,7 @@ heartMon = {
 						var last = heartMon.lastStats.shards[shardName];
 						var now = heartMon.nowStats.shards[shardName];
 						var val = last.total === 0 ? 0 : now.total - last.total;
-						console.log("Shard: " + shardName + " val: " + val);
+						//console.log("Shard: " + shardName + " val: " + val);
 						
 						var x = time, // current time
 	                        y = val;

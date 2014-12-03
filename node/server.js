@@ -17,6 +17,7 @@ var shardList = {}
 var shardClients = {};
 
 
+
 var HeartMon = {
 	
 	
@@ -36,14 +37,31 @@ var HeartMon = {
 							var repSet = hostString.split("/")[0];
 							var hosts = hostString.split("/")[1];
 							shardList[repSet] = {"repSet": repSet, "hosts": hosts};
-							MongoClient.connect("mongodb://"+hosts+"/admin", {"replSet": repSet}, function(err, dbgiven) {
-								if(!err) {
-									shardClients[repSet] = dbgiven;
-								} else {
-									console.log("DB Problem connecting to: " + repSet);
+							console.log(new Date() + ": attempting to connect to: " + repSet + " at hosts: " + hosts)
+							MongoClient.connect(
+								"mongodb://"+hosts+"/admin", 
+								{
+									"replSet": repSet,
+									"server": {
+										"socketOptions": {
+											"connectTimeoutMS": 250,
+											"socketTimeoutMS": 250,
+											"autoReconnect": true
+										}
+									}
+								}, 
+								//?connectTimeoutMS=1000&socketTimeoutMS=1000&autoReconnect=true
+								//"autoReconnect": true, "socketOptions": {"connectTimeoutMS": 50}
+								function(err, dbgiven) {
+									if(!err) {
+										shardClients[repSet] = dbgiven;
+										console.log(new Date() + ": Connection established with: " + repSet);
+									} else {
+										console.log(new Date() + ": DB Problem connecting to: " + repSet);
+									}
+									callback();
 								}
-								callback();
-							});
+							);
 						},
 						function(err){
 							//done with DB setup, start the server
@@ -71,30 +89,40 @@ var HeartMon = {
 				var repStatus = null;
 				var counters = null;
 				adminDB.command( {"replSetGetStatus":1},  function(err, infoRS){
-					repStatus = infoRS;
-					adminDB.command({"serverStatus":1}, function(err, infoSS){
-						counters = infoSS['opcounters'];
+					if(!err) {
+						repStatus = infoRS;
+						adminDB.command({"serverStatus":1}, function(err, infoSS){
+							if(!err) {
+								counters = infoSS['opcounters'];
 
-						var shardDetail =  {
-							"name": repSet,
-							"machines": []
-						};
+								var shardDetail =  {
+									"name": repSet,
+									"machines": []
+								};
 
-						var memLen = repStatus['members'].length;
-						for(var i=0; i<memLen; ++i){
-							var stat = repStatus['members'][i];
-							shardDetail['machines'].push({
-								"id": String(stat['_id']),
-								"name": String(stat['name']),
-								"state": String(stat['stateStr']),
-								"counters": counters
-							});
-						}
-						deep = Math.max(deep, shardDetail['machines'].length);
+								var memLen = repStatus['members'].length;
+								for(var i=0; i<memLen; ++i){
+									var stat = repStatus['members'][i];
+									shardDetail['machines'].push({
+										"id": String(stat['_id']),
+										"name": String(stat['name']),
+										"state": String(stat['stateStr']),
+										"counters": counters
+									});
+								}
+								deep = Math.max(deep, shardDetail['machines'].length);
 
-						status['shards'].push(  shardDetail );
+								status['shards'].push(  shardDetail );
+								callback();
+							} else {
+								callback();
+							}
+						});
+					}
+					else {
 						callback();
-					});
+					}
+					
 				});
 			}, 
 			function(err){
